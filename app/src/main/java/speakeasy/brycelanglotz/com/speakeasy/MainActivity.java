@@ -1,6 +1,7 @@
 package speakeasy.brycelanglotz.com.speakeasy;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,11 +18,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
+import com.parse.LogInCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
+
+import java.security.Permissions;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -52,6 +63,7 @@ public class MainActivity extends ActionBarActivity
         FacebookSdk.sdkInitialize(getApplicationContext());
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "aS5JfOEzT7lLooye3NQCzkFQagbUXaQVhKX24wnE", "5cUQj1EYf3azLeyvCOtMlyxkpqHYexewg8qBqZMh");
+        ParseFacebookUtils.initialize(getApplicationContext());
     }
 
     @Override
@@ -142,7 +154,38 @@ public class MainActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            Button loginButton = (Button) rootView.findViewById(R.id.loginButton);
+            loginButton.setOnClickListener(loginOnClickListener);
+
             return rootView;
+        }
+
+        private void login() {
+            ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "public_profile"), new LogInCallback() {
+                @Override
+                public void done(ParseUser user, ParseException err) {
+                    if (user == null) {
+                        Log.d("My app", "NULL");
+                    } else if (user.isNew()) {
+                        Log.d("My app", "New User");
+                    } else {
+                        Log.d("My app", "User");
+                    }
+                }
+            });
+        }
+
+        View.OnClickListener loginOnClickListener = new View.OnClickListener() {
+            public void onClick(View v) {
+                login();
+            }
+        };
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
         }
 
         @Override
@@ -152,5 +195,4 @@ public class MainActivity extends ActionBarActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
-
 }
