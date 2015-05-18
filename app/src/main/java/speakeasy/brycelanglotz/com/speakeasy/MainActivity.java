@@ -19,6 +19,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
+import com.parse.Parse;
+import com.parse.ParseObject;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -48,6 +50,8 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, "aS5JfOEzT7lLooye3NQCzkFQagbUXaQVhKX24wnE", "5cUQj1EYf3azLeyvCOtMlyxkpqHYexewg8qBqZMh");
     }
 
     @Override
