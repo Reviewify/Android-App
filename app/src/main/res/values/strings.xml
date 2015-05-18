@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">SpeakEasy</string>
+    <string name="facebook_app_id">950436471663400</string>
 
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
