@@ -57,10 +57,7 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "aS5JfOEzT7lLooye3NQCzkFQagbUXaQVhKX24wnE", "5cUQj1EYf3azLeyvCOtMlyxkpqHYexewg8qBqZMh");
-        ParseFacebookUtils.initialize(getApplicationContext());
+
     }
 
     @Override
