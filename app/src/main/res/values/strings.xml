@@ -4,6 +4,8 @@
 
     <string name="title_section1">Review</string>
     <string name="title_section2">Redeem</string>
+    <string name="title_section3">My Account</string>
+    <string name="title_section4">Logout</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

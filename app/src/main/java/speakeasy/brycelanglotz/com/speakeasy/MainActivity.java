@@ -56,8 +56,6 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-
     }
 
     @Override
@@ -93,6 +91,11 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 break;
             case 2:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, MyAccount.newInstance(position + 1))
+                        .commit();
+                break;
+            case 3:
                 ParseUser.logOut();
                 presentLoginActivity();
                 break;
@@ -106,6 +109,9 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
+                break;
+            case 3:
+                mTitle = getString(R.string.title_section3);
                 break;
         }
     }
