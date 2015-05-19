@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.parse.LogInCallback;
@@ -65,6 +69,9 @@ public class MainActivity extends ActionBarActivity
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null) {
             presentLoginActivity();
+        }
+        else {
+            onNavigationDrawerItemSelected(0);
         }
     }
 
@@ -198,6 +205,9 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
+        private Button mGenerateQRCodeButton;
+        private EditText mCostEditText;
+
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -217,8 +227,17 @@ public class MainActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_redeem, container, false);
+            mCostEditText = (EditText) rootView.findViewById(R.id.costEditText);
+            mGenerateQRCodeButton = (Button) rootView.findViewById(R.id.generateQRCodeButton);
+            mGenerateQRCodeButton.setOnClickListener(generateQRCodeOnClickListener);
             return rootView;
         }
+
+        View.OnClickListener generateQRCodeOnClickListener = new View.OnClickListener() {
+            public void onClick(View v) {
+                System.out.println(mCostEditText.getText());
+            }
+        };
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
