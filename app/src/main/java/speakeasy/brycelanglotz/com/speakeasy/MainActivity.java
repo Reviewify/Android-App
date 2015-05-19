@@ -6,20 +6,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.parse.LogInCallback;
@@ -29,8 +24,6 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import java.security.Permissions;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends ActionBarActivity
@@ -67,12 +60,39 @@ public class MainActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        ParseUser user = ParseUser.getCurrentUser();
+        if (user == null) {
+            presentLoginActivity();
+        }
+    }
+
+    private void presentLoginActivity() {
+        Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
+        MainActivity.this.startActivity(myIntent);
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        switch (position) {
+            case 0:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, ReviewFragment.newInstance(position + 1))
+                        .commit();
+                break;
+            case 1:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, RedeemFragment.newInstance(position + 1))
+                        .commit();
+                break;
+            case 2:
+                ParseUser.logOut();
+                presentLoginActivity();
+                break;
+        }
     }
 
     public void onSectionAttached(int number) {
@@ -82,9 +102,6 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
                 break;
         }
     }
@@ -128,7 +145,7 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class ReviewFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -139,53 +156,73 @@ public class MainActivity extends ActionBarActivity
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static ReviewFragment newInstance(int sectionNumber) {
+            ReviewFragment fragment = new ReviewFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
+        public ReviewFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            Button loginButton = (Button) rootView.findViewById(R.id.loginButton);
-            loginButton.setOnClickListener(loginOnClickListener);
+            View rootView = inflater.inflate(R.layout.fragment_review, container, false);
 
             return rootView;
         }
 
-        private void login() {
-            ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "public_profile"), new LogInCallback() {
-                @Override
-                public void done(ParseUser user, ParseException err) {
-                    if (user == null) {
-                        Log.d("My app", "NULL");
-                    } else if (user.isNew()) {
-                        Log.d("My app", "New User");
-                    } else {
-                        Log.d("My app", "User");
-                    }
-                }
-            });
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
         }
 
-        View.OnClickListener loginOnClickListener = new View.OnClickListener() {
-            public void onClick(View v) {
-                login();
-            }
-        };
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+            ((MainActivity) activity).onSectionAttached(
+                    getArguments().getInt(ARG_SECTION_NUMBER));
+        }
+    }
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class RedeemFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static RedeemFragment newInstance(int sectionNumber) {
+            RedeemFragment fragment = new RedeemFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        public RedeemFragment() {
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_redeem, container, false);
+            return rootView;
+        }
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
-            ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
         }
 
         @Override
