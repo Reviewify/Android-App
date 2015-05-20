@@ -1,6 +1,7 @@
 package speakeasy.brycelanglotz.com.speakeasy;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -290,6 +291,7 @@ public class MainActivity extends ActionBarActivity
             View rootView = inflater.inflate(R.layout.fragment_my_account, container, false);
             mTotalRewardsTextView = (TextView) rootView.findViewById(R.id.totalRewardsTextView);
 
+            final ProgressDialog dialog = ProgressDialog.show(getActivity(), null, "Loading Account Data...");
             ParseQuery<ParseObject> pointsQuery = ParseQuery.getQuery("Points");
             pointsQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
             pointsQuery.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -301,6 +303,7 @@ public class MainActivity extends ActionBarActivity
                     } else {
                         Log.d("Rewards", "Error: " + e.getMessage());
                     }
+                    dialog.hide();
                 }
             });
 
