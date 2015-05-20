@@ -30,10 +30,12 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.Arrays;
 import java.util.List;
 
+import speakeasy.brycelanglotz.com.model.Review;
 import speakeasy.brycelanglotz.com.model.Rewards;
 
 public class MainActivity extends ActionBarActivity
@@ -185,6 +187,17 @@ public class MainActivity extends ActionBarActivity
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_review, container, false);
 
+            String restaurantObjectId = "restaurantObjectId";
+
+            Review review = new Review(restaurantObjectId, null, null, null, null, null);
+
+            review.saveInBackground(new SaveCallback() {
+                public void done(ParseException e) {
+                    if (e != null) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            });
             return rootView;
         }
 
