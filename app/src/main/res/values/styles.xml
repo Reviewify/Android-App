@@ -2,12 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <item name="android:actionBarStyle">@style/SpeakeasyActionBar</item>
     </style>
 
-    <!-- ActionBar styles -->
-    <style name="SpeakeasyActionBar"
-        parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@drawable/actionbar_background</item>
-    </style>
 </resources>
