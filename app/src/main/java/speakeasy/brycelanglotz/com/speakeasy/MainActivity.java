@@ -21,14 +21,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.Arrays;
+import java.util.List;
+
+import speakeasy.brycelanglotz.com.model.Rewards;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -64,9 +70,6 @@ public class MainActivity extends ActionBarActivity
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null) {
             presentLoginActivity();
-        }
-        else {
-            onNavigationDrawerItemSelected(0);
         }
     }
 
@@ -262,8 +265,7 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        private Button mGenerateQRCodeButton;
-        private EditText mCostEditText;
+        private TextView mTotalRewardsTextView;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -284,6 +286,22 @@ public class MainActivity extends ActionBarActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_my_account, container, false);
+            mTotalRewardsTextView = (TextView) rootView.findViewById(R.id.totalRewardsTextView);
+
+            ParseQuery<ParseObject> pointsQuery = ParseQuery.getQuery("Points");
+            pointsQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+            pointsQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject rewardsObject, ParseException e) {
+                    if (e == null) {
+                        Rewards rewards = (Rewards) rewardsObject;
+                        mTotalRewardsTextView.setText(rewards.getTotalRewards().toString());
+                    } else {
+                        Log.d("Rewards", "Error: " + e.getMessage());
+                    }
+                }
+            });
+
             return rootView;
         }
 
