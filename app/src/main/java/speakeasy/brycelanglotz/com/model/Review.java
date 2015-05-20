@@ -7,7 +7,7 @@ import com.parse.*;
 
 import java.util.ArrayList;
 
-@ParseClassName("Review")
+@ParseClassName("Reviews")
 public class Review extends ParseObject {
     public Review() {
         // A default constructor is required.
@@ -22,6 +22,16 @@ public class Review extends ParseObject {
         setMealObjectId(mealObjectId);
         setTextReviews(textReviews);
         setStarRatings(starRatings);
+
+        this.saveInBackground(new SaveCallback() {
+            public void done(ParseException e) {
+                if (e != null) {
+                    System.out.println(e.getMessage());
+                } else {
+                    // Success
+                }
+            }
+        });
     }
 
     public String getRestaurantObjectId() {

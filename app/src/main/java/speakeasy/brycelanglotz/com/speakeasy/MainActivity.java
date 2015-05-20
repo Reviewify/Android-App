@@ -32,6 +32,8 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -188,16 +190,14 @@ public class MainActivity extends ActionBarActivity
             View rootView = inflater.inflate(R.layout.fragment_review, container, false);
 
             String restaurantObjectId = "restaurantObjectId";
+            String uploaderUsername = "uploaderUsername";
+            Integer rewards = 0;
+            String mealObjectId = "mealObjectId";
+            ArrayList<String> textReviews = new ArrayList<String>();
+            ArrayList<Float> starRatings = new ArrayList<Float>();
 
-            Review review = new Review(restaurantObjectId, null, null, null, null, null);
+            Review review = new Review(restaurantObjectId, uploaderUsername, rewards, mealObjectId, textReviews, starRatings);
 
-            review.saveInBackground(new SaveCallback() {
-                public void done(ParseException e) {
-                    if (e != null) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-            });
             return rootView;
         }
 
