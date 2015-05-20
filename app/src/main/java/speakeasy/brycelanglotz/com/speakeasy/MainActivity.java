@@ -7,8 +7,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,24 +18,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.facebook.FacebookSdk;
-import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.LogInCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import speakeasy.brycelanglotz.com.model.Review;
+import speakeasy.brycelanglotz.com.model.Reviews;
 import speakeasy.brycelanglotz.com.model.Rewards;
 
 public class MainActivity extends ActionBarActivity
@@ -196,7 +185,7 @@ public class MainActivity extends ActionBarActivity
             ArrayList<String> textReviews = new ArrayList<String>();
             ArrayList<Float> starRatings = new ArrayList<Float>();
 
-            Review review = new Review(restaurantObjectId, uploaderUsername, rewards, mealObjectId, textReviews, starRatings);
+            Reviews review = new Reviews(restaurantObjectId, uploaderUsername, rewards, mealObjectId, textReviews, starRatings);
 
             return rootView;
         }

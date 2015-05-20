@@ -8,14 +8,14 @@ import com.parse.*;
 import java.util.ArrayList;
 
 @ParseClassName("Reviews")
-public class Review extends ParseObject {
-    public Review() {
+public class Reviews extends ParseObject {
+    public Reviews() {
         // A default constructor is required.
     }
 
-    public Review(String restaurantObjectId, String uploaderUsername, Integer reward,
-                  String mealObjectId, ArrayList<String> textReviews,
-                  ArrayList<Float> starRatings) {
+    public Reviews(String restaurantObjectId, String uploaderUsername, Integer reward,
+                   String mealObjectId, ArrayList<String> textReviews,
+                   ArrayList<Float> starRatings) {
         setRestaurantObjectId(restaurantObjectId);
         setUploaderUsername(uploaderUsername);
         setReward(reward);
