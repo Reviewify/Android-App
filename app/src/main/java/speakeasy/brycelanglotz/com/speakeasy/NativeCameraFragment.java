@@ -440,11 +440,18 @@ public class NativeCameraFragment extends BaseFragment {
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            //TODO QR CODE PROCESSING
-            mCamera.startPreview();
-            mDialog.hide();
+        //TODO QR CODE PROCESSING
+        mCamera.startPreview();
+
+        qrCodeFromByteArray(data);
+
+        mDialog.hide();
         }
     };
+
+    private void qrCodeFromByteArray(byte[] data) {
+        
+    }
 
     /**
      * Used to return the camera File output.

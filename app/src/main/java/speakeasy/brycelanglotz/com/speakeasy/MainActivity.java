@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
