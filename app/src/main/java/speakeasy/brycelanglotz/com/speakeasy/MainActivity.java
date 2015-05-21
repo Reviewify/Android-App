@@ -3,6 +3,8 @@ package speakeasy.brycelanglotz.com.speakeasy;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -17,9 +19,14 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -162,6 +169,7 @@ public class MainActivity extends ActionBarActivity
 
         private Button mGenerateQRCodeButton;
         private EditText mCostEditText;
+        private ImageView mQRCodeImageView;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -185,14 +193,40 @@ public class MainActivity extends ActionBarActivity
             mCostEditText = (EditText) rootView.findViewById(R.id.costEditText);
             mGenerateQRCodeButton = (Button) rootView.findViewById(R.id.generateQRCodeButton);
             mGenerateQRCodeButton.setOnClickListener(generateQRCodeOnClickListener);
+            mQRCodeImageView = (ImageView) rootView.findViewById(R.id.qrCodeImageView);
             return rootView;
         }
 
         View.OnClickListener generateQRCodeOnClickListener = new View.OnClickListener() {
             public void onClick(View v) {
-                System.out.println(mCostEditText.getText());
+                setQRCodeWithString(ParseUser.getCurrentUser().getUsername() + mCostEditText.getText());
             }
         };
+
+        private void setQRCodeWithString(String data) {
+            try {
+                QRCodeWriter writer = new QRCodeWriter();
+                BitMatrix matrix = writer.encode(
+                        data, BarcodeFormat.QR_CODE, 400, 400
+                );
+                Bitmap bmp = toBitmap(matrix);
+                mQRCodeImageView.setImageBitmap(bmp);
+            } catch (WriterException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private static Bitmap toBitmap(BitMatrix matrix){
+            int height = matrix.getHeight();
+            int width = matrix.getWidth();
+            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+            for (int x = 0; x < width; x++){
+                for (int y = 0; y < height; y++){
+                    bmp.setPixel(x, y, matrix.get(x,y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+            return bmp;
+        }
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
