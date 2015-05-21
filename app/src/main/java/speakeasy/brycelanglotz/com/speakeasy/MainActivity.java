@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -27,7 +28,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import speakeasy.brycelanglotz.com.model.Meals;
 import speakeasy.brycelanglotz.com.model.Reviews;
 import speakeasy.brycelanglotz.com.model.Rewards;
 
@@ -216,6 +219,8 @@ public class MainActivity extends ActionBarActivity
 
         private TextView mTotalRewardsTextView;
 
+        private ArrayList<Meals> mealsList;
+
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -249,7 +254,18 @@ public class MainActivity extends ActionBarActivity
                     } else {
                         Log.d("Rewards", "Error: " + e.getMessage());
                     }
-                    dialog.hide();
+                    ParseQuery<ParseObject> mealsQuery = ParseQuery.getQuery("Meals");
+                    mealsQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> results, ParseException e) {
+                            if (e == null) {
+                                mealsList = new ArrayList<Meals>();
+                                for (ParseObject mealObject : results) {
+                                    mealsList.add((Meals) mealObject);
+                                }
+                            }
+                        }
+                    });
                 }
             });
 
