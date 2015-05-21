@@ -79,7 +79,7 @@ public class MainActivity extends ActionBarActivity
         switch (position) {
             case 0:
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, ReviewFragment.newInstance(position + 1))
+                        .replace(R.id.container, NativeCameraFragment.newInstance(position + 1))
                         .commit();
                 break;
             case 1:
@@ -147,61 +147,6 @@ public class MainActivity extends ActionBarActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class ReviewFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static ReviewFragment newInstance(int sectionNumber) {
-            ReviewFragment fragment = new ReviewFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public ReviewFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_review, container, false);
-
-            String restaurantObjectId = "restaurantObjectId";
-            String uploaderUsername = "uploaderUsername";
-            Integer rewards = 0;
-            String mealObjectId = "mealObjectId";
-            ArrayList<String> textReviews = new ArrayList<String>();
-            ArrayList<Float> starRatings = new ArrayList<Float>();
-
-            Reviews review = new Reviews(restaurantObjectId, uploaderUsername, rewards, mealObjectId, textReviews, starRatings);
-
-            return rootView;
-        }
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
     }
 
     /**
@@ -299,7 +244,7 @@ public class MainActivity extends ActionBarActivity
                 public void done(ParseObject rewardsObject, ParseException e) {
                     if (e == null) {
                         Rewards rewards = (Rewards) rewardsObject;
-                        mTotalRewardsTextView.setText(rewards.getTotalRewards().toString());
+                        mTotalRewardsTextView.setText("Total Rewards: " + rewards.getTotalRewards().toString());
                     } else {
                         Log.d("Rewards", "Error: " + e.getMessage());
                     }
