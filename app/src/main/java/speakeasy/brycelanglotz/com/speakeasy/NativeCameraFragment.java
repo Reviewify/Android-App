@@ -24,9 +24,14 @@ package speakeasy.brycelanglotz.com.speakeasy;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -41,12 +46,25 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -119,6 +137,11 @@ public class NativeCameraFragment extends BaseFragment {
                     public void onClick(View v) {
                         // get an image from the camera
                         mDialog = ProgressDialog.show(getActivity(), null, "Processing...");
+                        if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+                            Camera.Parameters p = mCamera.getParameters();
+                            p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                            mCamera.setParameters(p);
+                        }
                         mCamera.takePicture(null, null, mPicture);
                     }
                 }
@@ -161,6 +184,11 @@ public class NativeCameraFragment extends BaseFragment {
             e.printStackTrace();
         }
         return c; // returns null if camera is unavailable
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -440,18 +468,12 @@ public class NativeCameraFragment extends BaseFragment {
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-        //TODO QR CODE PROCESSING
-        mCamera.startPreview();
 
-        qrCodeFromByteArray(data);
+            mCamera.startPreview();
 
-        mDialog.hide();
+            mDialog.hide();
         }
     };
-
-    private void qrCodeFromByteArray(byte[] data) {
-        
-    }
 
     /**
      * Used to return the camera File output.
