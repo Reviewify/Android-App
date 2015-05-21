@@ -22,8 +22,8 @@
 
 package speakeasy.brycelanglotz.com.speakeasy;
 
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
@@ -68,6 +68,8 @@ public class NativeCameraFragment extends BaseFragment {
 
     // Reference to the containing view.
     private View mCameraView;
+
+    private ProgressDialog mDialog;
 
     /**
      * Default empty constructor.
@@ -116,6 +118,7 @@ public class NativeCameraFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         // get an image from the camera
+                        mDialog = ProgressDialog.show(getActivity(), null, "Processing...");
                         mCamera.takePicture(null, null, mPicture);
                     }
                 }
@@ -435,29 +438,11 @@ public class NativeCameraFragment extends BaseFragment {
      * Picture Callback for handling a picture capture and saving it out to a file.
      */
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
-
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-
-            File pictureFile = getOutputMediaFile();
-            if (pictureFile == null){
-                Toast.makeText(getActivity(), "Image retrieval failed.", Toast.LENGTH_SHORT)
-                .show();
-                return;
-            }
-
-            try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
-                fos.close();
-
-                // Restart the camera preview.
-                safeCameraOpenInView(mCameraView);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            //TODO QR CODE PROCESSING
+            mCamera.startPreview();
+            mDialog.hide();
         }
     };
 
