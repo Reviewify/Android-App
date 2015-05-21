@@ -23,6 +23,7 @@
 package speakeasy.brycelanglotz.com.speakeasy;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Environment;
@@ -364,7 +365,7 @@ public class NativeCameraFragment extends BaseFragment {
 
                 if (mPreviewSize != null){
                     Display display = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-
+                    int x = display.getRotation();
                     switch (display.getRotation())
                     {
                         case Surface.ROTATION_0:
@@ -414,6 +415,9 @@ public class NativeCameraFragment extends BaseFragment {
                 if (size.height != width) continue;
                 double ratio = (double) size.width / size.height;
                 if (ratio <= targetRatio + ASPECT_TOLERANCE && ratio >= targetRatio - ASPECT_TOLERANCE){
+                    optimalSize = size;
+                }
+                else if (optimalSize == null) {
                     optimalSize = size;
                 }
             }
