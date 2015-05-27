@@ -59,4 +59,16 @@ public class Meals extends ParseObject {
     public void setServerObjectId(String server) {
         this.put("server_objectId", server);
     }
+
+    public String getClaimedString() {
+        String claimedIndicator = "Available";
+        if (this.getClaimed() == true) {
+            claimedIndicator = "Claimed";
+        }
+        return claimedIndicator;
+    }
+
+    public String getRewardsString() {
+        return getPotentialReward().toString();
+    }
 }

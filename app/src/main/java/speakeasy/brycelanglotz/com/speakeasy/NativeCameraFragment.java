@@ -469,6 +469,29 @@ public class NativeCameraFragment extends BaseFragment {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
 
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            if (bitmap == null)
+            {
+                return;
+            }
+            int width = bitmap.getWidth(), height = bitmap.getHeight();
+            int[] pixels = new int[width * height];
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+            bitmap.recycle();
+            bitmap = null;
+            RGBLuminanceSource source = new RGBLuminanceSource(width, height, pixels);
+            BinaryBitmap bBitmap = new BinaryBitmap(new HybridBinarizer(source));
+            MultiFormatReader reader = new MultiFormatReader();
+            try
+            {
+                Result result = reader.decode(bBitmap);
+                System.out.println(result);
+            }
+            catch (com.google.zxing.NotFoundException e)
+            {
+                return;
+            }
+
             mCamera.startPreview();
 
             mDialog.hide();

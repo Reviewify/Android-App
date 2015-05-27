@@ -17,9 +17,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.zxing.BarcodeFormat;
@@ -255,8 +258,9 @@ public class MainActivity extends ActionBarActivity
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         private TextView mTotalRewardsTextView;
-
-        private ArrayList<Meals> mealsList;
+        private ListView mMealsListView;
+        private ArrayList<Meals> mealsList = new ArrayList<Meals>();
+        private ArrayList<String> mealsClaimedList = new ArrayList<String>();
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -278,6 +282,7 @@ public class MainActivity extends ActionBarActivity
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_my_account, container, false);
             mTotalRewardsTextView = (TextView) rootView.findViewById(R.id.totalRewardsTextView);
+            mMealsListView = (ListView) rootView.findViewById(R.id.mealsListView);
 
             final ProgressDialog dialog = ProgressDialog.show(getActivity(), null, "Loading Account Data...");
             ParseQuery<ParseObject> pointsQuery = ParseQuery.getQuery("Points");
@@ -297,10 +302,16 @@ public class MainActivity extends ActionBarActivity
                         public void done(List<ParseObject> results, ParseException e) {
                             if (e == null) {
                                 mealsList = new ArrayList<Meals>();
+                                Meals meal;
                                 for (ParseObject mealObject : results) {
-                                    mealsList.add((Meals) mealObject);
+                                    meal = (Meals) mealObject;
+                                    mealsList.add(meal);
+                                    mealsClaimedList.add(meal.getClaimedString());
                                 }
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1, mealsClaimedList);
+                                mMealsListView.setAdapter(adapter);
                             }
+                            dialog.hide();
                         }
                     });
                 }

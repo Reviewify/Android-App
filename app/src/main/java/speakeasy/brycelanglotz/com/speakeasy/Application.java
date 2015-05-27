@@ -5,6 +5,7 @@ import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 
+import speakeasy.brycelanglotz.com.model.Meals;
 import speakeasy.brycelanglotz.com.model.Reviews;
 import speakeasy.brycelanglotz.com.model.Rewards;
 
@@ -21,6 +22,7 @@ public class Application extends android.app.Application{
         Parse.enableLocalDatastore(this);
         ParseObject.registerSubclass(Rewards.class);
         ParseObject.registerSubclass(Reviews.class);
+        ParseObject.registerSubclass(Meals.class);
         Parse.initialize(this, "aS5JfOEzT7lLooye3NQCzkFQagbUXaQVhKX24wnE", "5cUQj1EYf3azLeyvCOtMlyxkpqHYexewg8qBqZMh");
         ParseFacebookUtils.initialize(getApplicationContext());
     }
