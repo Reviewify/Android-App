@@ -11,8 +11,6 @@ import com.parse.*;
 @ParseClassName("Meals")
 public class Meals extends ParseObject implements Parcelable {
 
-    private int mData;
-
     // 99.9% of the time you can just ignore this
     public int describeContents() {
         return 0;
@@ -20,7 +18,7 @@ public class Meals extends ParseObject implements Parcelable {
 
     // write your object's data to the passed-in Parcel
     public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(mData);
+
     }
 
     // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
@@ -36,7 +34,7 @@ public class Meals extends ParseObject implements Parcelable {
 
     // example constructor that takes a Parcel and gives you an object populated with it's values
     private Meals(Parcel in) {
-        mData = in.readInt();
+
     }
 
     public Meals() {

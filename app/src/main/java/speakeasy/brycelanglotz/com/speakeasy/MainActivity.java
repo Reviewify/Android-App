@@ -44,9 +44,11 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import speakeasy.brycelanglotz.com.model.Meals;
@@ -65,6 +67,8 @@ public class MainActivity extends ActionBarActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    private Meals mScannedMeal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,12 @@ public class MainActivity extends ActionBarActivity
 
     private void presentLoginActivity() {
         Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
+        myIntent.putExtra("MEAL", mScannedMeal);
+        MainActivity.this.startActivity(myIntent);
+    }
+
+    private void presentMealSummaryActivity() {
+        Intent myIntent = new Intent(MainActivity.this, MealSummaryActivity.class);
         MainActivity.this.startActivity(myIntent);
     }
 
@@ -128,37 +138,35 @@ public class MainActivity extends ActionBarActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (scanResult != null) {
-            if (scanResult.getContents() != null) {
-                String results = scanResult.getContents();
-                String[] components = results.split(" ");
-                HashMap<String, String> parameters = new HashMap<String, String>();
-                if (components.length >= 2) {
-                    parameters.put("restaurantCode", components[0]);
-                    parameters.put("mealCode", components[1]);
-                }
-                ParseCloud.callFunctionInBackground("VerifyMeal", parameters, new FunctionCallback<Object>() {
-                    public void done(Object object, ParseException e) {
-                        if (e == null) {
-                            Meals meal = (Meals) object;
-                            Toast.makeText(getApplicationContext(), meal.getObjectId(),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                        else {
-                            showScanner();
-                            Toast.makeText(getApplicationContext(), e.getMessage(),
-                                    Toast.LENGTH_LONG).show();
-                        }
+        if (scanResult != null && scanResult.getContents() != null) {
+            String results = scanResult.getContents();
+            String[] components = results.split(" ");
+            HashMap<String, String> parameters = new HashMap<String, String>();
+            if (components.length >= 2) {
+                parameters.put("restaurantCode", components[0]);
+                parameters.put("mealCode", components[1]);
+            }
+            ParseCloud.callFunctionInBackground("VerifyMeal", parameters, new FunctionCallback<Object>() {
+                public void done(Object object, ParseException e) {
+                    if (e == null) {
+                        Meals meal = (Meals) object;
+                        mScannedMeal = meal;
+                        presentMealSummaryActivity();
                     }
-                });
-            }
-            else {
-                // TODO Handle back button from scanner intent
-            }
+                    else {
+                        Toast.makeText(getApplicationContext(), e.getMessage(),
+                                Toast.LENGTH_LONG).show();
+                        showScanner();
+                    }
+                }
+            });
+        }
+        else {
+            onNavigationDrawerItemSelected(1);
         }
     }
 
-    private void showScanner() {
+    public void showScanner() {
         IntentIntegrator.initiateScan(this, "QR_CODE", "Scan QR Code Here");
     }
 
@@ -222,9 +230,7 @@ public class MainActivity extends ActionBarActivity
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        private Button mGenerateQRCodeButton;
-        private EditText mCostEditText;
-        private ImageView mQRCodeImageView;
+        private Button mShowScannerButton;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -241,47 +247,21 @@ public class MainActivity extends ActionBarActivity
         public ReviewFragment() {
         }
 
-
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_review, container, false);
-            // mGenerateQRCodeButton = (Button) rootView.findViewById(R.id.generateQRCodeButton);
-            // mGenerateQRCodeButton.setOnClickListener(generateQRCodeOnClickListener);
+            mShowScannerButton = (Button) rootView.findViewById(R.id.showScannerButton);
+
+            mShowScannerButton.setOnClickListener(showScannerOnClickListener);
             return rootView;
         }
 
-        View.OnClickListener generateQRCodeOnClickListener = new View.OnClickListener() {
+        View.OnClickListener showScannerOnClickListener = new View.OnClickListener() {
             public void onClick(View v) {
-                setQRCodeWithString(ParseUser.getCurrentUser().getUsername() + mCostEditText.getText());
+                IntentIntegrator.initiateScan(getActivity(), "QR_CODE", "Scan QR Code Here");
             }
         };
-
-        private void setQRCodeWithString(String data) {
-            try {
-                QRCodeWriter writer = new QRCodeWriter();
-                BitMatrix matrix = writer.encode(
-                        data, BarcodeFormat.QR_CODE, 400, 400
-                );
-                Bitmap bmp = toBitmap(matrix);
-                mQRCodeImageView.setImageBitmap(bmp);
-            } catch (WriterException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private static Bitmap toBitmap(BitMatrix matrix){
-            int height = matrix.getHeight();
-            int width = matrix.getWidth();
-            Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-            for (int x = 0; x < width; x++){
-                for (int y = 0; y < height; y++){
-                    bmp.setPixel(x, y, matrix.get(x,y) ? Color.BLACK : Color.WHITE);
-                }
-            }
-            return bmp;
-        }
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -422,7 +402,7 @@ public class MainActivity extends ActionBarActivity
                 public void done(ParseObject rewardsObject, ParseException e) {
                     if (e == null) {
                         Rewards rewards = (Rewards) rewardsObject;
-                        mTotalRewardsTextView.setText("Total Rewards: " + rewards.getTotalRewards().toString());
+                        mTotalRewardsTextView.setText("Total Rewards: " + NumberFormat.getNumberInstance(Locale.US).format(rewards.getTotalRewards()));
                     } else {
                         Log.d("Rewards", "Error: " + e.getMessage());
                     }
