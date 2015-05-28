@@ -3,10 +3,42 @@ package speakeasy.brycelanglotz.com.model;
 /**
  * Created by Wes on 5/20/2015.
  */
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.parse.*;
 
 @ParseClassName("Meals")
-public class Meals extends ParseObject {
+public class Meals extends ParseObject implements Parcelable {
+
+    private int mData;
+
+    // 99.9% of the time you can just ignore this
+    public int describeContents() {
+        return 0;
+    }
+
+    // write your object's data to the passed-in Parcel
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(mData);
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<Meals> CREATOR = new Parcelable.Creator<Meals>() {
+        public Meals createFromParcel(Parcel in) {
+            return new Meals(in);
+        }
+
+        public Meals[] newArray(int size) {
+            return new Meals[size];
+        }
+    };
+
+    // example constructor that takes a Parcel and gives you an object populated with it's values
+    private Meals(Parcel in) {
+        mData = in.readInt();
+    }
+
     public Meals() {
         // A default constructor is required.
     }
