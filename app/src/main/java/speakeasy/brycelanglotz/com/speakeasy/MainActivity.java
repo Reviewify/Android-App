@@ -104,7 +104,7 @@ public class MainActivity extends ActionBarActivity
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, ReviewFragment.newInstance(position + 1))
                         .commit();
-                IntentIntegrator.initiateScan(this, "QR_CODE", "Scan QR Code Here");
+                showScanner();
                 break;
             case 1:
                 fragmentManager.beginTransaction()
@@ -129,25 +129,37 @@ public class MainActivity extends ActionBarActivity
 
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanResult != null) {
-            String results = scanResult.getContents();
-            String[] components = results.split(" ");
-            HashMap<String, String> parameters = new HashMap<String, String>();
-            parameters.put("restaurantCode", components[0]);
-            parameters.put("mealCode", components[1]);
-            ParseCloud.callFunctionInBackground("VerifyMeal", parameters, new FunctionCallback<Object>() {
-                public void done(Object object, ParseException e) {
-                    if (e == null) {
-                        Meals meal = (Meals) object;
-                        Toast.makeText(getApplicationContext(), meal.getClaimedString(),
-                                Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        Toast.makeText(getApplicationContext(), e.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    }
+            if (scanResult.getContents() != null) {
+                String results = scanResult.getContents();
+                String[] components = results.split(" ");
+                HashMap<String, String> parameters = new HashMap<String, String>();
+                if (components.length >= 2) {
+                    parameters.put("restaurantCode", components[0]);
+                    parameters.put("mealCode", components[1]);
                 }
-            });
+                ParseCloud.callFunctionInBackground("VerifyMeal", parameters, new FunctionCallback<Object>() {
+                    public void done(Object object, ParseException e) {
+                        if (e == null) {
+                            Meals meal = (Meals) object;
+                            Toast.makeText(getApplicationContext(), meal.getObjectId(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            showScanner();
+                            Toast.makeText(getApplicationContext(), e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+            else {
+                // TODO Handle back button from scanner intent
+            }
         }
+    }
+
+    private void showScanner() {
+        IntentIntegrator.initiateScan(this, "QR_CODE", "Scan QR Code Here");
     }
 
     public void onSectionAttached(int number) {
