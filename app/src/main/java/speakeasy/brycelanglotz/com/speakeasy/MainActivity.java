@@ -54,6 +54,7 @@ import java.util.Map;
 import speakeasy.brycelanglotz.com.model.Meals;
 import speakeasy.brycelanglotz.com.model.Reviews;
 import speakeasy.brycelanglotz.com.model.Rewards;
+import speakeasy.brycelanglotz.com.model.Singleton;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -96,7 +97,6 @@ public class MainActivity extends ActionBarActivity
 
     private void presentLoginActivity() {
         Intent myIntent = new Intent(MainActivity.this, LoginActivity.class);
-        myIntent.putExtra("MEAL", mScannedMeal);
         MainActivity.this.startActivity(myIntent);
     }
 
@@ -150,7 +150,7 @@ public class MainActivity extends ActionBarActivity
                 public void done(Object object, ParseException e) {
                     if (e == null) {
                         Meals meal = (Meals) object;
-                        mScannedMeal = meal;
+                        Singleton.getInstance().setScannedMeal(meal);
                         presentMealSummaryActivity();
                     }
                     else {

@@ -9,33 +9,7 @@ import android.os.Parcelable;
 import com.parse.*;
 
 @ParseClassName("Meals")
-public class Meals extends ParseObject implements Parcelable {
-
-    // 99.9% of the time you can just ignore this
-    public int describeContents() {
-        return 0;
-    }
-
-    // write your object's data to the passed-in Parcel
-    public void writeToParcel(Parcel out, int flags) {
-
-    }
-
-    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
-    public static final Parcelable.Creator<Meals> CREATOR = new Parcelable.Creator<Meals>() {
-        public Meals createFromParcel(Parcel in) {
-            return new Meals(in);
-        }
-
-        public Meals[] newArray(int size) {
-            return new Meals[size];
-        }
-    };
-
-    // example constructor that takes a Parcel and gives you an object populated with it's values
-    private Meals(Parcel in) {
-
-    }
+public class Meals extends ParseObject {
 
     public Meals() {
         // A default constructor is required.
@@ -83,7 +57,7 @@ public class Meals extends ParseObject implements Parcelable {
     }
 
     public String getServerObjectId() {
-        return (String) this.get("server");
+        return (String) this.get("server_objectId");
     }
 
     public void setServerObjectId(String server) {

@@ -1,5 +1,6 @@
 package speakeasy.brycelanglotz.com.speakeasy;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import com.parse.ParseQuery;
 
 import speakeasy.brycelanglotz.com.model.Meals;
 import speakeasy.brycelanglotz.com.model.Servers;
+import speakeasy.brycelanglotz.com.model.Singleton;
 
 
 public class MealSummaryActivity extends ActionBarActivity {
@@ -28,22 +30,27 @@ public class MealSummaryActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_summary);
-        Intent i = getIntent();
-        mMeal = (Meals) i.getParcelableExtra("MEAL");
+
+        setTitle(R.string.meal_summary_activitiy_title);
+
+        mMeal = (Meals) Singleton.getInstance().getScannedMeal();
+
         mServerNameTextView = (TextView) findViewById(R.id.serverNameTextView);
         mPotentialRewardTextView = (TextView) findViewById(R.id.potentialRewardTextView);
         mPotentialRewardTextView.setText(mMeal.getPotentialReward().toString());
-        ParseQuery<ParseObject> pointsQuery = ParseQuery.getQuery("Points");
-        pointsQuery.whereEqualTo("objectId", mMeal.getServerObjectId());
-        pointsQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+        ParseQuery<ParseObject> serversQuery = ParseQuery.getQuery("Servers");
+        serversQuery.whereEqualTo("objectId", mMeal.getServerObjectId());
+        final ProgressDialog dialog = ProgressDialog.show(this, null, "Loading Server Data...");
+        serversQuery.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
-            public void done(ParseObject rewardsObject, ParseException e) {
+            public void done(ParseObject serverObject, ParseException e) {
                 if (e == null) {
-                    Servers server = (Servers) rewardsObject;
+                    Servers server = (Servers) serverObject;
                     mServerNameTextView.setText(server.getFirstName());
                 } else {
                     Log.d("Servers", "Error: " + e.getMessage());
                 }
+                dialog.hide();
             }
         });
     }
