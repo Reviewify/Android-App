@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -25,19 +28,18 @@ public class MealSummaryActivity extends ActionBarActivity {
 
     private TextView mServerNameTextView;
     private TextView mPotentialRewardTextView;
+    private Button mBeginReviewButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_meal_summary);
 
-        setTitle(R.string.meal_summary_activitiy_title);
-
         mMeal = (Meals) Singleton.getInstance().getScannedMeal();
-
         mServerNameTextView = (TextView) findViewById(R.id.serverNameTextView);
         mPotentialRewardTextView = (TextView) findViewById(R.id.potentialRewardTextView);
-        mPotentialRewardTextView.setText(mMeal.getPotentialReward().toString());
+        mBeginReviewButton = (Button) findViewById(R.id.beginReviewButton);
+
         ParseQuery<ParseObject> serversQuery = ParseQuery.getQuery("Servers");
         serversQuery.whereEqualTo("objectId", mMeal.getServerObjectId());
         final ProgressDialog dialog = ProgressDialog.show(this, null, "Loading Server Data...");
@@ -46,13 +48,34 @@ public class MealSummaryActivity extends ActionBarActivity {
             public void done(ParseObject serverObject, ParseException e) {
                 if (e == null) {
                     Servers server = (Servers) serverObject;
+                    mPotentialRewardTextView.setText(mMeal.getPotentialReward().toString());
                     mServerNameTextView.setText(server.getFirstName());
+                    mBeginReviewButton.setOnClickListener(beginReviewOnClickListener);
                 } else {
-                    Log.d("Servers", "Error: " + e.getMessage());
+                    popToMainWithError(e.getMessage());
                 }
                 dialog.hide();
             }
         });
+    }
+
+    private void popToMainWithError(String error) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Removes other Activities from stack
+        startActivity(intent);
+        Toast.makeText(getApplicationContext(), error,
+                Toast.LENGTH_LONG).show();
+    }
+
+    View.OnClickListener beginReviewOnClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            presentReviewActivity();
+        }
+    };
+
+    private void presentReviewActivity() {
+        Intent myIntent = new Intent(MealSummaryActivity.this, ReviewActivity.class);
+        MealSummaryActivity.this.startActivity(myIntent);
     }
 
     @Override

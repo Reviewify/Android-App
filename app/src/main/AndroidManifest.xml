@@ -41,8 +41,12 @@
         </activity>
         <activity
             android:name=".MealSummaryActivity"
-            android:label="@string/title_activity_meal_summary"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_meal_summary" >
+        </activity>
+        <activity
+            android:name=".ReviewActivity"
+            android:label="@string/title_activity_review" >
         </activity>
     </application>
 

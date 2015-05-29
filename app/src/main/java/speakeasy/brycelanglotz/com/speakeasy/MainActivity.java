@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +47,7 @@ import com.parse.ParseUser;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -139,6 +141,7 @@ public class MainActivity extends ActionBarActivity
 
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (scanResult != null && scanResult.getContents() != null) {
+            final ProgressDialog dialog = ProgressDialog.show(this, null, "Validating...");
             String results = scanResult.getContents();
             String[] components = results.split(" ");
             HashMap<String, String> parameters = new HashMap<String, String>();
@@ -158,6 +161,7 @@ public class MainActivity extends ActionBarActivity
                                 Toast.LENGTH_LONG).show();
                         showScanner();
                     }
+                    dialog.hide();
                 }
             });
         }
@@ -394,6 +398,27 @@ public class MainActivity extends ActionBarActivity
             mTotalRewardsTextView = (TextView) rootView.findViewById(R.id.totalRewardsTextView);
             mMealsListView = (ListView) rootView.findViewById(R.id.mealsListView);
 
+            mMealsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position,
+                                        long id) {
+                    if (!mealsList.get(position).getClaimed()) {
+                        Singleton.getInstance().setScannedMeal(mealsList.get(position));
+                        Intent intent = new Intent(getActivity(), MealSummaryActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(getActivity().getApplicationContext(), "This meal has already been claimed",
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+            return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
             final ProgressDialog dialog = ProgressDialog.show(getActivity(), null, "Loading Account Data...");
             ParseQuery<ParseObject> pointsQuery = ParseQuery.getQuery("Points");
             pointsQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
@@ -413,6 +438,7 @@ public class MainActivity extends ActionBarActivity
                             if (e == null) {
                                 mealsList = new ArrayList<Meals>();
                                 Meals meal;
+                                Collections.reverse(results);
                                 for (ParseObject mealObject : results) {
                                     meal = (Meals) mealObject;
                                     mealsList.add(meal);
@@ -426,8 +452,6 @@ public class MainActivity extends ActionBarActivity
                     });
                 }
             });
-
-            return rootView;
         }
 
         @Override
