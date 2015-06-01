@@ -24,4 +24,12 @@
         android:isIndicator="false"
         android:id="@+id/ratingBar"/>
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/reviewEditText"
+        android:layout_gravity="center_horizontal" />
+
 </LinearLayout>
