@@ -1,5 +1,6 @@
 package speakeasy.brycelanglotz.com.speakeasy;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,21 +9,33 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.parse.LogInCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 import java.util.Arrays;
 
 
 public class LoginActivity extends ActionBarActivity {
 
+    private EditText mEmailEditText;
+    private EditText mPasswordEditText;
+    private EditText mReenterPasswordEditText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mEmailEditText = (EditText) findViewById(R.id.emailEditText);
+        mPasswordEditText = (EditText) findViewById(R.id.passwordEditText);
+        mReenterPasswordEditText = (EditText) findViewById(R.id.reenterPasswordEditText);
 
         Button loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(loginOnClickListener);
@@ -34,21 +47,84 @@ public class LoginActivity extends ActionBarActivity {
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void popToRootActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Removes other Activities from stack
+        startActivity(intent);
+    }
+
     private void login() {
-        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "public_profile"), new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException err) {
-                if (user == null) {
-                    Log.d("My app", "NULL");
-                } else if (user.isNew()) {
-                    finish();
-                    return;
-                } else {
-                    finish();
-                    return;
+        String lowercaseEmail = mEmailEditText.getText().toString().toLowerCase();
+        String password = mPasswordEditText.getText().toString();
+        String secondPassword = mReenterPasswordEditText.getText().toString();
+        if (secondPassword == "") {
+            final ProgressDialog dialog = ProgressDialog.show(this, null, "Logging In...");
+            ParseUser.logInInBackground(lowercaseEmail, password, new LogInCallback() {
+                @Override
+                public void done(ParseUser parseUser, ParseException e) {
+                    if (e != null) {
+                        if (e.getCode() == 101) {
+                            Toast.makeText(getApplicationContext(), "● Invalid login credentials",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    else {
+                        boolean emailVerified = (boolean) parseUser.get("emailVerified");
+                        if (emailVerified) {
+                            popToRootActivity();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "● Verify E-Mail and try again",
+                                    Toast.LENGTH_LONG).show();
+                            ParseUser.logOut();
+                        }
+                    }
+                    dialog.hide();
                 }
+            });
+        }
+        else if (password != "" && secondPassword == password) {
+            if (password.length() < 5 || password.length() > 16) {
+                Toast.makeText(getApplicationContext(), "● Password must be 5-16 characters",
+                        Toast.LENGTH_LONG).show();
+                ParseUser.logOut();
             }
-        });
+            else {
+                ParseUser user = new ParseUser();
+                user.setEmail(lowercaseEmail);
+                user.setPassword(password);
+                user.setUsername(lowercaseEmail);
+
+                final ProgressDialog dialog = ProgressDialog.show(this, null, "Creating User...");
+
+                user.signUpInBackground(new SignUpCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            if (e.getCode() == 202 || e.getCode() == 203) {
+                                Toast.makeText(getApplicationContext(), "● E-Mail is already registered",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                            if (e.getCode() == 125) {
+                                Toast.makeText(getApplicationContext(), "● Invalid E-Mail",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        else {
+                            mReenterPasswordEditText.setText("");
+                            Toast.makeText(getApplicationContext(), "● Verify E-Mail before logging in",
+                                    Toast.LENGTH_LONG).show();
+                            ParseUser.logOut();
+                        }
+                        dialog.hide();
+                    }
+                });
+            }
+        }
+        if (secondPassword != "" && password != secondPassword) {
+            Toast.makeText(getApplicationContext(), "● Password don't match",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     View.OnClickListener loginOnClickListener = new View.OnClickListener() {

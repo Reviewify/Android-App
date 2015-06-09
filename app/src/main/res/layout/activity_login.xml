@@ -7,15 +7,51 @@
     tools:context="speakeasy.brycelanglotz.com.speakeasy.LoginActivity"
     android:id="@+id/loginActivity">
 
-    <Button
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Log in with Facebook"
-        android:id="@+id/loginButton"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:background="#3B5998"
-        android:textColor="#FFFFFF"
-        android:textSize="@dimen/abc_text_size_button_material"
-        android:textAllCaps="false"/>
+        android:layout_centerVertical="true">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:ems="10"
+            android:id="@+id/emailEditText"
+            android:hint="E-Mail"
+            android:gravity="center_horizontal"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/passwordEditText"
+            android:hint="Password"
+            android:gravity="center_horizontal"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/reenterPasswordEditText"
+            android:hint="Re-Enter Password (To Create Account)"
+            android:gravity="center_horizontal"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:id="@+id/loginButton"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="#2ECC71"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/abc_text_size_button_material"
+            android:textAllCaps="false"/>
+
+    </LinearLayout>
 </RelativeLayout>
