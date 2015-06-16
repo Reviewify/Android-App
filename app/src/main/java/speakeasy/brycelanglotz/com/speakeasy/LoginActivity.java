@@ -57,7 +57,7 @@ public class LoginActivity extends ActionBarActivity {
         String lowercaseEmail = mEmailEditText.getText().toString().toLowerCase();
         String password = mPasswordEditText.getText().toString();
         String secondPassword = mReenterPasswordEditText.getText().toString();
-        if (secondPassword == "") {
+        if (secondPassword.equals("")) {
             final ProgressDialog dialog = ProgressDialog.show(this, null, "Logging In...");
             ParseUser.logInInBackground(lowercaseEmail, password, new LogInCallback() {
                 @Override
@@ -83,7 +83,7 @@ public class LoginActivity extends ActionBarActivity {
                 }
             });
         }
-        else if (password != "" && secondPassword == password) {
+        else if (!secondPassword.equals("") && secondPassword.equals(password)) {
             if (password.length() < 5 || password.length() > 16) {
                 Toast.makeText(getApplicationContext(), "● Password must be 5-16 characters",
                         Toast.LENGTH_LONG).show();
@@ -121,8 +121,8 @@ public class LoginActivity extends ActionBarActivity {
                 });
             }
         }
-        if (secondPassword != "" && password != secondPassword) {
-            Toast.makeText(getApplicationContext(), "● Password don't match",
+        if (!secondPassword.equals("") && !password.equals(secondPassword)) {
+            Toast.makeText(getApplicationContext(), "● Passwords don't match",
                     Toast.LENGTH_LONG).show();
         }
     }
